@@ -98,9 +98,62 @@ for (const key of Object.keys(process.env)) {
         };
     }
 }
+let openAPI = '';
+const openAPIObject = {
+    openapi: '3.0.0',
+    info: {
+        version: require('./package.json').version || '0.0.0',
+        title: 'Simple Gateway',
+        description: 'An overview of all routes routed by this gateway.',
+    },
+    paths: {
+        '/': {
+            get: {
+                description: 'a short overview over the services',
+                responses: {
+                    '200': {
+                        description: 'success',
+                        schema: {
+                            type: 'object',
+                        },
+                    },
+                },
+            },
+            options: {
+                description: 'cors response headers',
+            },
+        },
+        '/open-api': {
+            get: {
+                description: 'this document',
+                responses: {
+                    '200': {
+                        description: 'success',
+                        schema: {
+                            type: 'object',
+                        },
+                    },
+                },
+            },
+            options: {
+                description: 'cors response headers',
+            },
+        },
+        '/alive': {
+            head: {
+                description: 'pull-based alive check',
+                responses: {
+                    '204': {
+                        description: 'success',
+                    },
+                },
+            },
+        },
+    }
+};
 
 const handle = (req: IncomingMessage, res: ServerResponse) => {
-    const request = randomBytes(16).toString('hex');
+    const request = 'inc-' + randomBytes(16).toString('hex');
     log(request, `${req.method} ${req.url}`);
     const method: string = (req.method || 'GET').toUpperCase();
     const url: string = (req.url || '').toLowerCase();
@@ -146,7 +199,7 @@ const handle = (req: IncomingMessage, res: ServerResponse) => {
             res.setHeader('Access-Control-Allow-Methods', 'GET');
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.writeHead(200);
-            res.end('{}');
+            res.end(openAPI);
             return;
         }
     }
@@ -241,17 +294,74 @@ const handle = (req: IncomingMessage, res: ServerResponse) => {
 };
 
 const port = Number.parseInt(getEnv('SERVICE_HTTP_PORT', '8080'));
-if (getEnv('SERVICE_HTTPS_KEY') && getEnv('SERVICE_HTTPS_CERT')) {
-    serveHttps(
-        {
-            key: readFileSync(getEnv('SERVICE_HTTPS_KEY')),
-            cert: readFileSync(getEnv('SERVICE_HTTPS_CERT'))
-        },
-        handle
-    )
-    .listen(port);
-    log('', `Started https server on port ${port} with ${Object.keys(routes).length} routes.`);
+const cert = getEnv('SERVICE_HTTPS_CERT');
+const key = getEnv('SERVICE_HTTPS_KEY');
+if (cert && key) {
+    if (!existsSync(key)) {
+        error('server', `Key at ${key} doesn't exist.`);
+        serveHttp(handle).listen(port);
+        log('server', `Started http server on port ${port} with ${Object.keys(routes).length} routes.`);
+    } else if (!existsSync(cert)) {
+        error('server', `Cert at ${cert} doesn't exist.`);
+        serveHttp(handle).listen(port);
+        log('server', `Started http server on port ${port} with ${Object.keys(routes).length} routes.`);
+    } else {
+        serveHttps(
+            {
+                key: readFileSync(getEnv('SERVICE_HTTPS_KEY')),
+                cert: readFileSync(getEnv('SERVICE_HTTPS_CERT'))
+            },
+            handle
+        )
+        .listen(port);
+        log('server', `Started https server on port ${port} with ${Object.keys(routes).length} routes.`);
+    }
 } else {
     serveHttp(handle).listen(port);
-    log('', `Started http server on port ${port} with ${Object.keys(routes).length} routes.`);
+    log('server', `Started http server on port ${port} with ${Object.keys(routes).length} routes.`);
+}
+if (getEnv('SERVICE_OPEN_API_MERGING', 'FALSE').toUpperCase() === 'TRUE') {
+    log('server', 'Open-API merging enabled.');
+    (() => {
+        const documents: {[url: string]: {route: string, path: string}[]} = {};
+        for (const route of Object.keys(routes)) {
+            if (typeof documents[routes[route]['open-api']] === 'undefined') {
+                documents[routes[route]['open-api']] = [];
+            }
+            const el = {route, path: routes[route].target.path}
+            documents[routes[route]['open-api']].push(el);
+        }
+        const update = () => {
+            log('server', `Started update for openapi document.`);
+            let remaining = Object.keys(documents).length;
+            for (const url of Object.keys(documents)) {
+                const request = randomBytes(16).toString('hex');
+                log(request, `open-api-document ${url} update started.`);
+                let data = '';
+                const uds = (url.match(/^https/) ? https : http)(url);
+                uds.on('data', (chunk) => {
+                    data += chunk;
+                });
+                uds.on('end', async () => {
+                    log(request, `open-api-document ${url} updated.`);
+                    const o = JSON.parse(data);
+                    for (const r of Object.keys(o.paths)) {
+                        for (const t of documents[url]) {
+                            if (r.startsWith(t.path)) {
+                                openAPIObject.paths[t.route + r] = o.paths[r];
+                            }
+                        }
+                    }
+                    remaining --;
+                    log(request, `open-api-document ${url} routes updated, ${remaining} routes remaining.`);
+                    if (remaining === 0) {
+                        openAPI = JSON.stringify(openAPIObject);
+                        log('server', `open-api-document fully updated.`);
+                    }
+                });
+            }
+        };
+        setInterval(update, Number.parseInt(getEnv('SERVICE_OPEN_API_FREQUENCY', '60000')));
+        update();
+    })();
 }

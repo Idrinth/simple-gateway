@@ -14,22 +14,24 @@ This route is meant to allow for easy pull-based uptime checks. It returns a 204
 
 ### GET /open-api
 
-This route aggregates the open-api definitions of registered services and displays a unified scheme for usage in postman for example. This has not yet been implemented.
+This route aggregates the open-api definitions of registered services and displays a unified scheme for usage in postman for example.
 
 ## Configuration
 
-Configuration from different sources will be merges, with ENVs overwriting file based route definitions.
+Configuration from different sources will be merged, with ENVs overwriting file based route definitions.
 
 ### ENVs
 
 Configuring via the environment requires setting up the following values:
 
+- SERVICE_OPEN_API_MERGING will enable updating of the open-api document if set to `TRUE`
+- SERVICE_OPEN_API_FREQUENCY defauls to 600000ms and sets the update frequency
 - REQUIRED_COOKIE_NAME will set a cookie name to check for is restrict is set to cookie
 - ROUTES_TARGET_ORIGIN will set an Access-Control-Allow-Origin header and defaults to *
 - ROUTES_TARGET_METHODS will set the Access-Control-Allow-Methods header and filling it activates the CORS responses for all routes
 - /ROUTE_[A-Z0-9_]+/i defines the request root, where requests from the gateway will be send
-- /RESTRICT_[A-Z0-9_]+/ is optional and can be any of none(standard), api-key, cookie or authorization
-- /OPEN_API_[A-Z0-9_]+/ defines a route to retrieve the service's open-api document from. It will default to {host}/open-api
+- /RESTRICT_[A-Z0-9_]+/i is optional and can be any of none(standard), api-key, cookie or authorization
+- /OPEN_API_[A-Z0-9_]+/i defines a route to retrieve the service's open-api document from. It will default to {host}/open-api
 
 ### File (routes.idrinth.json)
 
