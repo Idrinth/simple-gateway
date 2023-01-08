@@ -1,0 +1,15 @@
+{
+    "name": "@idrinth/simple-gateway",
+    "version": "1.0.0",
+    "keywords": ["functional", "server", "gateway"],
+    "author": "Björn Büttner",
+    "contributors": [],
+    "dependencies": {
+        "@types/node": "*",
+        "typescript": "^4.9.4",
+        "ts-node": "^10.9.1"
+    },
+    "scripts": {
+        "start": "node index.js"
+    }
+}
