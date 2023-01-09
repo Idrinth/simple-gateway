@@ -2,6 +2,10 @@
 
 This gateway reduces the configuration to a minimum by removing features that will not be required when starting to use a gateway. I'm open to expanding upon functionality on request, please just open an issue.
 
+## Support
+
+You can get support via discord at [Idrinth's Server](https://discord.gg/xHSF8CGPTh).
+
 ## Pre-Defined Routes
 
 ### GET /
