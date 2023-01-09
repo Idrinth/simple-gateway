@@ -4,4 +4,4 @@ RUN mkdir /project
 ADD . /project
 RUN cd project && npm install
 
-Entrypoint ['node', '/project/index.js']
+ENTRYPOINT ['node', '/project/index.js']
