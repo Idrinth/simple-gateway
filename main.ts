@@ -7,8 +7,9 @@ const getEnv = (key: string, fallback: string = ''): string => {
     if (typeof process.env[key] === 'string') {
         return process.env[key];
     }
+    const lkey = key.toLowerCase();
     for (const prop of Object.keys(process.env)) {
-        if (prop.toLowerCase() === key.toLowerCase() && typeof process.env[prop] === 'string') {
+        if (prop.toLowerCase() === lkey && typeof process.env[prop] === 'string') {
             return process.env[prop];
         }
     }
