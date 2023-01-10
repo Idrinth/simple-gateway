@@ -1,7 +1,7 @@
 FROM node:19-alpine
 
 RUN mkdir /project
-ADD . /project
+COPY . /project
 RUN cd project && npm install
 
 ENTRYPOINT ['node', '/project/index.js']
