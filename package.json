@@ -1,9 +1,20 @@
 {
     "name": "@idrinth/simple-gateway",
     "version": "1.0.0",
-    "keywords": ["functional", "server", "gateway"],
-    "author": "Björn Büttner",
+    "keywords": ["functional", "server", "gateway", "open-api"],
+    "description": "A minimalistic gateway to get people started on using one easily.",
+    "homepage": "https://github.com/Idrinth/simple-gateway#readme"
+    "bugs": "https://github.com/Idrinth/simple-gateway/issues"
+    "license": "MIT",
+    "author": {
+        "name": "Björn Büttner",
+        "url": "https://linktr.ee/idrinth"
+    },
     "contributors": [],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Idrinth/simple-gateway.git"
+    },
     "dependencies": {
         "@types/node": "*",
         "typescript": "^4.9.4",
