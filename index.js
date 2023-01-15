@@ -1,2 +1,2 @@
-require('ts-node').register();
-require('./main.ts');
+require('./src/ts-node.js');
+require('./src/main.ts');

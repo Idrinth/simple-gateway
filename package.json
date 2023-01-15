@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "keywords": ["functional", "server", "gateway", "open-api"],
     "description": "A minimalistic gateway to get people started on using one easily.",
-    "homepage": "https://github.com/Idrinth/simple-gateway#readme"
-    "bugs": "https://github.com/Idrinth/simple-gateway/issues"
+    "homepage": "https://github.com/Idrinth/simple-gateway#readme",
+    "bugs": "https://github.com/Idrinth/simple-gateway/issues",
     "license": "MIT",
     "author": {
         "name": "Björn Büttner",
@@ -20,7 +20,11 @@
         "typescript": "^4.9.4",
         "ts-node": "^10.9.1"
     },
+    "bin": [
+        "bin/generator.js"
+    ],
     "scripts": {
-        "start": "node index.js"
+        "start": "node index.js",
+        "generate": "node bin/generator.js"
     }
 }

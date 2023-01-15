@@ -29,7 +29,7 @@ Configuration from different sources will be merged, with ENVs overwriting file 
 Configuring via the environment requires setting up the following values:
 
 - SERVICE_OPEN_API_MERGING will enable updating of the open-api document if set to `TRUE`
-- SERVICE_OPEN_API_FREQUENCY defauls to 600000ms and sets the update frequency
+- SERVICE_OPEN_API_FREQUENCY defauls to 60000ms and sets the update frequency
 - REQUIRED_COOKIE_NAME will set a cookie name to check for is restrict is set to cookie
 - ROUTES_TARGET_ORIGIN will set an Access-Control-Allow-Origin header and defaults to *
 - ROUTES_TARGET_METHODS will set the Access-Control-Allow-Methods header and filling it activates the CORS responses for all routes
