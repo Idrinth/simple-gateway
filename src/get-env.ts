@@ -19,7 +19,7 @@ if (existsSync(__dirname + '/../.env')) {
     for (const row of data.split("\n")) {
         if (!row.startsWith('#')) {
             const env = row.split('=', 2);
-            process.env[env[0].replace(/^\s+|\s+$/, '')] = env[1].replace(/(^\s*"\s*)|(\s*"\s*$)|(\s*$)|(^\s*)/ig, '');
+            process.env[env[0].replace(/(^\s+)|(\s+$)/g, '')] = env[1].replace(/(^\s*"\s*)|(\s*"\s*$)|(\s*$)|(^\s*)/ig, '');
         }
     }
 }
