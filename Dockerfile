@@ -1,7 +1,7 @@
 FROM node:19-alpine
 
-RUN mkdir /project
+WORKDIR /project
 COPY . /project
-RUN cd project && npm install --production
+RUN npm install --production
 
 ENTRYPOINT ['node', '/project/index.js']
